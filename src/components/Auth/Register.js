@@ -7,7 +7,9 @@ import firebase from '../../firebase'
 export default function Register() {
 const [ registerData, setRegisterData ] = useState({username:"", email:"", password:"", passwordConfirmation:""})
 const [ errors, setErrors ] = useState([])
+const [ loading, setLoading ] = useState(false)
 const  { username, email, password, passwordConfirmation } = registerData;
+
 
     function handleChange(event) {
     setRegisterData({...registerData, [event.target.name] : event.target.value})
@@ -16,15 +18,18 @@ const  { username, email, password, passwordConfirmation } = registerData;
     function handleSubmit(event) {
         event.preventDefault();
         if(isFormValid()) {
+            setErrors([])
+            setLoading(true)
 
             firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
             .then(user => {
-                console.log(user)
+                setLoading(false)
             })
             .catch(err => {
-                console.log(err)
+                setLoading(false)
+                setErrors(() => [err])
             })
         }
       
@@ -32,6 +37,7 @@ const  { username, email, password, passwordConfirmation } = registerData;
 
 
     function isFormEmpty({ username, email, password, passwordConfirmation }) {
+        console.log("HEJ", !username.length, !email.length, !password.length, !passwordConfirmation.length )
         return !username.length || !email.length || !password.length || !passwordConfirmation.length 
     }
     function isPasswordValid({password, passwordConfirmation}) {
@@ -50,7 +56,7 @@ const  { username, email, password, passwordConfirmation } = registerData;
              error = {message:"Fill in all fields"}
              setErrors(() => [ error])
              return false;
-        } else if(isPasswordValid(registerData)) {
+        } else if(!isPasswordValid(registerData)) {
             error={message: "Password valid"}
             setErrors(() => [error])
             return false;
@@ -59,6 +65,8 @@ const  { username, email, password, passwordConfirmation } = registerData;
         }
     }
 
+    function handleErrors(errors, inputName) {
+        return  errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error' : ''}
 function displayErrors(errors) {
 return errors.map((error, index) => (<p index={index}>Error: {error.message}</p>))
 }
@@ -71,22 +79,50 @@ return errors.map((error, index) => (<p index={index}>Error: {error.message}</p>
                 </Header>
                 <Form onSubmit={handleSubmit} size="large">
                     <Segment stacked>
-                        <Form.Input fluid name="username" icon="user" iconPosition="left"
-                        placeholder="Username" onChange={handleChange} type="text" value={username}
+                        <Form.Input fluid 
+                        name="username" 
+                        icon="user" 
+                        iconPosition="left"
+                        placeholder="Username" 
+                        onChange={handleChange} 
+                        type="text" 
+                        value={username}
+                        className={handleErrors(errors, "username")}
                         />
 
-                        <Form.Input fluid name="email" icon="mail" iconPosition="left"
-                        placeholder="Email Adress" onChange={handleChange} type="email" value={email}
+                        <Form.Input fluid 
+                        name="email" 
+                        icon="mail" 
+                        iconPosition="left"
+                        placeholder="Email Adress" 
+                        onChange={handleChange} 
+                        type="email" 
+                        value={email}
+                        className={handleErrors(errors, "email")}
                         />
 
-                        <Form.Input fluid name="password" icon="lock" iconPosition="left"
-                        placeholder="Password" onChange={handleChange} type="password" value={password}
+                        <Form.Input fluid 
+                        name="password" 
+                        icon="lock" 
+                        iconPosition="left"
+                        placeholder="Password" 
+                        onChange={handleChange} 
+                        type="password" 
+                        value={password}
+                        className={handleErrors(errors, "password")}
                         />
 
-                        <Form.Input fluid name="passwordConfirmation" icon="repeat" iconPosition="left"
-                        placeholder="Confirm Password" onChange={handleChange} type="password" value={passwordConfirmation}
+                        <Form.Input fluid 
+                        name="passwordConfirmation" 
+                        icon="repeat" 
+                        iconPosition="left"
+                        placeholder="Confirm Password" 
+                        onChange={handleChange} 
+                        type="password" 
+                        value={passwordConfirmation}
+                        className={handleErrors(errors, "password")}
                         />
-                        <Button color="orange" fluid size="large">SUBMIT</Button>
+                        <Button disabled={loading} className={loading ? 'loading' : ''} color="orange" fluid size="large">SUBMIT</Button>
                     </Segment>
 
                 </Form>

@@ -6,6 +6,7 @@ import firebase from '../../firebase'
 
 export default function Register() {
 const [ registerData, setRegisterData ] = useState({username:"", email:"", password:"", passwordConfirmation:""})
+const [ errors, setErrors ] = useState([])
 const  { username, email, password, passwordConfirmation } = registerData;
 
     function handleChange(event) {
@@ -14,17 +15,53 @@ const  { username, email, password, passwordConfirmation } = registerData;
 
     function handleSubmit(event) {
         event.preventDefault();
-        firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(user => {
-            console.log(user)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+        if(isFormValid()) {
+
+            firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
+            .then(user => {
+                console.log(user)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        }
+      
     }
 
+
+    function isFormEmpty({ username, email, password, passwordConfirmation }) {
+        return !username.length || !email.length || !password.length || !passwordConfirmation.length 
+    }
+    function isPasswordValid({password, passwordConfirmation}) {
+            if(password.length < 6 && passwordConfirmation < 6) {
+                return false;
+            } else if( password !== passwordConfirmation) {
+                return false;
+            } else {
+                return true;
+            }
+    }
+
+    function isFormValid() {
+        let error;
+        if(isFormEmpty(registerData)) {
+             error = {message:"Fill in all fields"}
+             setErrors(() => [ error])
+             return false;
+        } else if(isPasswordValid(registerData)) {
+            error={message: "Password valid"}
+            setErrors(() => [error])
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+function displayErrors(errors) {
+return errors.map((error, index) => (<p index={index}>Error: {error.message}</p>))
+}
     return(
         <Grid textAlign="center" verticalAlign="middle" className="app">
             <Grid.Column style={{maxWidth: 450}}>
@@ -53,6 +90,11 @@ const  { username, email, password, passwordConfirmation } = registerData;
                     </Segment>
 
                 </Form>
+             {errors.length > 0 && 
+                <Message error>
+                    {displayErrors(errors)}
+                </Message>
+                 }
                 <Message>Already a user?<Link to="/login">Login</Link></Message>
             </Grid.Column>
         </Grid>

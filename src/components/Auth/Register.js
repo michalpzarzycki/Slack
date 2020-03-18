@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Grid, Form, Segment, Button, Header, Message, Icon} from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import { register } from '../../serviceWorker';
-import firebase from '../../firebase'
+import firebase from '../../firebase';
+import md5 from 'md5';
 
 export default function Register() {
 const [ registerData, setRegisterData ] = useState({username:"", email:"", password:"", passwordConfirmation:""})
 const [ errors, setErrors ] = useState([])
 const [ loading, setLoading ] = useState(false)
+const [userRef, setUserRef] = useState(firebase.database().ref('users'))
 const  { username, email, password, passwordConfirmation } = registerData;
 
 
@@ -24,8 +26,16 @@ const  { username, email, password, passwordConfirmation } = registerData;
             firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
-            .then(user => {
-                setLoading(false)
+            .then(createdUser => {
+                createdUser.user.updateProfile({
+                    displayName:username,
+                    photoURL:`http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
+                }).then(() => {
+                    saveUser(createdUser)
+                    setLoading(false)
+
+                })
+                console.log(createdUser)
             })
             .catch(err => {
                 setLoading(false)
@@ -35,7 +45,12 @@ const  { username, email, password, passwordConfirmation } = registerData;
       
     }
 
-
+function saveUser(createdUser) {
+    userRef.child(createdUser.user.uid).set({
+        name: createdUser.user.displayName,
+        avatar: createdUser.user.photoURL
+    })
+}
     function isFormEmpty({ username, email, password, passwordConfirmation }) {
         console.log("HEJ", !username.length, !email.length, !password.length, !passwordConfirmation.length )
         return !username.length || !email.length || !password.length || !passwordConfirmation.length 

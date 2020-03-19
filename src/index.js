@@ -13,7 +13,7 @@ import { createStore } from 'redux'
 import { Provider, connect } from 'react-redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import rootReducer from './components/reducers';
-import { setUser } from './components/actions'
+import { setUser, clearUser } from './components/actions'
 
 
 const store =createStore(rootReducer, composeWithDevTools())
@@ -25,6 +25,10 @@ const Root = (props) => {
             if(user) {
                 props.setUser(user)
                 props.history.push('/')
+            } else {
+                props.history.push('/login')
+                props.clearUser()
+
             }
         })
     }, [])
@@ -41,7 +45,7 @@ const Root = (props) => {
 const mapStateFromProps = state => ({
     isLoading: state.user.isLoading
 })
-const RootWithRouter = withRouter(connect(mapStateFromProps, { setUser })(Root))
+const RootWithRouter = withRouter(connect(mapStateFromProps, { setUser, clearUser })(Root))
 ReactDOM.render(
     <Provider store={store}>
         <Router>

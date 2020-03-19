@@ -6,6 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import Spinner from './components/Spinner'
 import 'semantic-ui-css/semantic.min.css'
 import firebase from './firebase'
 import { createStore } from 'redux'
@@ -28,7 +29,7 @@ const Root = (props) => {
         })
     }, [])
 
-    return(
+    return props.isLoading ? <Spinner /> : (
 
         <Switch>
             <Route exact path="/" component={App}/>
@@ -37,8 +38,10 @@ const Root = (props) => {
         </Switch>
     )
 }
-
-const RootWithRouter = withRouter(connect(null, { setUser })(Root))
+const mapStateFromProps = state => ({
+    isLoading: state.user.isLoading
+})
+const RootWithRouter = withRouter(connect(mapStateFromProps, { setUser })(Root))
 ReactDOM.render(
     <Provider store={store}>
         <Router>

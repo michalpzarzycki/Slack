@@ -8,13 +8,21 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import 'semantic-ui-css/semantic.min.css'
 import firebase from './firebase'
+import { createStore } from 'redux'
+import { Provider, connect } from 'react-redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import rootReducer from './components/reducers';
+import { setUser } from './components/actions'
 
+
+const store =createStore(rootReducer, composeWithDevTools())
 
 const Root = (props) => {
     useEffect(()=>{
         console.log("EK")
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
+                props.setUser(user)
                 props.history.push('/')
             }
         })
@@ -30,8 +38,14 @@ const Root = (props) => {
     )
 }
 
-const RootWithRouter = withRouter(Root)
-ReactDOM.render(<Router><RootWithRouter /></Router>, document.getElementById('root'));
+const RootWithRouter = withRouter(connect(null, { setUser })(Root))
+ReactDOM.render(
+    <Provider store={store}>
+        <Router>
+            <RootWithRouter />
+        </Router>
+    </Provider>
+, document.getElementById('root'));
 
 
 serviceWorker.unregister();

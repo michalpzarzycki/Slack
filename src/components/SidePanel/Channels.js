@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { Menu, Icon, Modal, Form, Input, Button } from 'semantic-ui-react'
+import firebase from '../../firebase'
 
-function Channels() {
+
+function Channels({ currentUser }) {
 const [channels, setChannels] = useState([])
 const [modal, setModal] = useState(false)
 const [channelInfo, setChannelInfo] = useState({channelName:"", channelDetails:""})
+const [channelRef, setChannelRef] = useState(firebase.database().ref('channels'))
 
 const handleChange = event => {
     event.persist()
@@ -12,6 +15,34 @@ const handleChange = event => {
 
     console.log(channelInfo)
 }
+
+const addChannel = () => {
+    const key = channelRef.push().key
+    const { channelName, channelDetails } = channelInfo;
+    let newChannel = {
+        id: key,
+        name: channelName,
+        details: channelDetails,
+        createdBy: {
+            user: currentUser.displayName,
+            avatar: currentUser.photoURL,
+        }
+    }
+    channelRef.child(key).update(newChannel).then(()=> {
+        setChannelInfo({channelDetails:"", channelName:""})
+        closeModal()
+        console.log("Channel Added")
+    })
+}
+
+const handleSubmit = event => {
+    if(isFormValid(channelInfo)){
+        addChannel()
+    }
+}
+
+const isFormValid = ({ channelName, channelDetails }) => channelName && channelDetails
+
 const closeModal = () => setModal(false)
 const openModal = () => setModal(true)
     return(<>
@@ -26,7 +57,7 @@ const openModal = () => setModal(true)
         <Modal basic open={modal} onClose={closeModal}>
             <Modal.Header>Add a Channel</Modal.Header>
             <Modal.Content>
-                <Form>
+                <Form onSubmit={handleSubmit}>
                     <Form.Field>
                         <Input 
                             fluid 
@@ -46,7 +77,7 @@ const openModal = () => setModal(true)
                 </Form>
             </Modal.Content>
             <Modal.Actions>
-                <Button color="green" inverted>
+                <Button color="green" inverted onClick={handleSubmit}>
                     <Icon name="checkmark"/>Add
                 </Button>
                 <Button color="red" inverted onClick={closeModal}>

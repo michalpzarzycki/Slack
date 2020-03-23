@@ -4,10 +4,10 @@ import firebase from '../../firebase'
 
 function MessageForm({ messageRef, currentChannel, currentUser }) {
     const [message, setMessage] = useState('');
-    const [iLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState([])
 
-    const handleChange = event => setMessage({[event.target.name]: event.target.value})
+    const handleChange = event => setMessage(event.target.value)
     const createMessage = () => {
         const messageInfo = {
             timestamp: Date.now(),
@@ -49,10 +49,12 @@ function MessageForm({ messageRef, currentChannel, currentUser }) {
                 label={<Button icon="add" />}
                 labelPosition="left"
                 placeholder="Write your message"
+                value={message}
                 className={errors.some(error => error.message.includes('message')) ? 'error' : ''}
             />
             <Button.Group>
                 <Button 
+                disabled={isLoading}
                 onClick={sendMessage}
                 color="orange"
                 content="Add reply"

@@ -8,7 +8,7 @@ body,
 
 
 
-/*Message.js*/
+/*Messages.js*/
 .messages {
     height: 440px;
     overflow-y: scroll;
@@ -22,4 +22,11 @@ body,
     left:0;
     right: 1em;
     z-index:200;
+}
+
+
+/*Message.js*/
+.message__self {
+    border-left: 2px solid orange;
+    padding-left: 8px;
 }

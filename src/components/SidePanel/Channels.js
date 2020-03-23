@@ -15,6 +15,9 @@ const [activeChannel, setActiveChannel] = useState("")
 
 useEffect(() => {
     addListeners()
+    return () => {
+        channelRef.off()
+    }
 },[])
 useEffect(() => {
     setFirstChannel()

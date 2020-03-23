@@ -43,6 +43,10 @@ function MessageForm({ messageRef, currentChannel, currentUser }) {
     }
 
 
+    const uploadFile = (file, metadata) => {
+        console.log("FILE", file, "METADATA", metadata)
+    }
+
     const openModal = () => setModal(true)
     const closeModal = () => setModal(false)
     return(
@@ -74,7 +78,7 @@ function MessageForm({ messageRef, currentChannel, currentUser }) {
                 icon="upload"
                 onClick={openModal}
                 />
-                <FileModal modal={modal} closeModal={closeModal}/>
+                <FileModal modal={modal} closeModal={closeModal} uploadFile={uploadFile}/>
             </Button.Group>
         </Segment>
     )

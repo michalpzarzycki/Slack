@@ -10,12 +10,31 @@ const [channels, setChannels] = useState("")
 const [modal, setModal] = useState(false)
 const [channelInfo, setChannelInfo] = useState({channelName:"", channelDetails:""})
 const [channelRef, setChannelRef] = useState(firebase.database().ref('channels'))
+const [firstLoad, setFirstLoad] = useState(true)
+const [activeChannel, setActiveChannel] = useState("")
 
 useEffect(() => {
     addListeners()
 },[])
+useEffect(() => {
+    setFirstChannel()
 
+}, [channels])
 
+const setFirstChannel = () => {
+    let firstChannel = channels[0];
+    if(firstLoad===true && channels.length > 0) {
+        setCurrentChannel(firstChannel)
+        console.log("HIIII")
+        setFirstLoad(false) 
+        setActiveChannels(firstChannel)
+
+    }
+}
+
+const setActiveChannels = (channel) => {
+    setActiveChannel(channel.id)
+}
 const addListeners =  () => {
     let loadedChannels = [];
     channelRef.on("child_added", snap => {
@@ -33,6 +52,7 @@ const handleChange = event => {
 
 const changeChannel = (channel) => {
  setCurrentChannel(channel)
+ setActiveChannels(channel)
 }
 
 
@@ -68,6 +88,7 @@ const displayChannels = channels => {
             onClick={() => changeChannel(channel)}
             name={channel.name}
             style={{ opacity: 0.7 }}
+            active={channel.id == activeChannel}
         >
             #{channel.name}
         </Menu.Item>

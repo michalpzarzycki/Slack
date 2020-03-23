@@ -1,9 +1,12 @@
-import React from 'react';
-import MessageHeader from './MessageHeader'
-import MessageForm from './MessageForm'
-import { Segment, Comment, Message } from 'semantic-ui-react'
+import React, {useState} from 'react';
+import MessageHeader from './MessageHeader';
+import MessageForm from './MessageForm';
+import { Segment, Comment, Message } from 'semantic-ui-react';
+import firebase from '../../firebase';
 
-const Messages = () => {
+const Messages = ({ currentChannel, currentUser }) => {
+const [messageRef, setMessageRef] = useState(firebase.database().ref("messages"))
+const [channel, setChannel] = useState(currentChannel)
     return(
         <>
         <MessageHeader />
@@ -12,7 +15,7 @@ const Messages = () => {
                 {/* MESSAGES */}
             </Comment.Group>
         </Segment>
-        <MessageForm />
+        <MessageForm messageRef={messageRef} currentChannel={channel} currentUser={currentUser}/>
         </>
     )
 }

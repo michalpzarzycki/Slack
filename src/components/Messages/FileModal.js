@@ -4,7 +4,7 @@ import { Modal, Input, Button, Icon } from 'semantic-ui-react'
 
 function FileModal({ modal, closeModal, uploadFile }) {
     const [file, setFile] = useState(null);
-    const [authorized, setAuthorized] = useState(['image/jpg', 'image/png'])
+    const [authorized, setAuthorized] = useState(['image/jpg', 'image/png', 'image/jpeg'])
 
 
     const isAuthorized = (filename) => authorized.includes(mime.lookup(filename))
@@ -13,14 +13,20 @@ function FileModal({ modal, closeModal, uploadFile }) {
      const file = event.target.files[0]
      console.log("FILE", file)  
      if(file) {
-        setFile({...file})  
+        setFile(file)  
 
      }
     }
 
     const sendFile = () => {
+        console.log("SendFile")
         if(file!==null) {
+            console.log("SendFile rozne od nukk")
+            console.log("MIME", mime.lookup(file.name))
+
             if(isAuthorized(file.name)) {
+                console.log("SendFile is authorized")
+
                 const metadata = { contentType: mime.lookup(file.name)}
                 uploadFile(file, metadata)
                 closeModal()
@@ -36,7 +42,7 @@ function FileModal({ modal, closeModal, uploadFile }) {
             <Modal.Header>Select image file</Modal.Header>
             <Modal.Content>
                 <Input
-                    onChange={sendFile}
+                    onChange={addFile}
                     fluid
                     label="File types: jpg, png"
                     name="file"
@@ -45,7 +51,7 @@ function FileModal({ modal, closeModal, uploadFile }) {
             </Modal.Content>
             <Modal.Actions>
                 <Button 
-                onClick={uploadFile}
+                onClick={sendFile}
                  color="green"
                  inverted
                 >

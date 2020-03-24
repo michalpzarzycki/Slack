@@ -3,6 +3,7 @@ import { Segment, Button, Input } from 'semantic-ui-react'
 import FileModal from './FileModal'
 import uuidv4 from 'uuid/v4'
 import firebase from '../../firebase'
+import ProgressBar from './ProgressBar';
 
 function MessageForm({ messageRef, currentChannel, currentUser }) {
     const [message, setMessage] = useState('');
@@ -115,7 +116,7 @@ const sendFileMessage = (fileURL, ref, pathToURL) => {
                 value={message}
                 className={errors.some(error => error.message.includes('message')) ? 'error' : ''}
             />
-            <Button.Group>
+            <Button.Group fluid>
                 <Button 
                 disabled={isLoading}
                 onClick={sendMessage}
@@ -123,16 +124,20 @@ const sendFileMessage = (fileURL, ref, pathToURL) => {
                 content="Add reply"
                 labelPosition="left"
                 icon="edit"
+                
                 />
                     <Button 
+                    
                 color="teal"
                 content="Upload media"
                 labelPosition="right"
                 icon="upload"
                 onClick={openModal}
                 />
+                </Button.Group>
                 <FileModal modal={modal} closeModal={closeModal} uploadFile={uploadFile}/>
-            </Button.Group>
+                <ProgressBar uploadState={uploadState} percentUploaded={percentUploaded}/>
+            
         </Segment>
     )
 }

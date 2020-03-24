@@ -127,7 +127,7 @@ const sendFileMessage = (fileURL, ref, pathToURL) => {
                 
                 />
                     <Button 
-                    
+                    disabled={uploadState === 'uploading'}
                 color="teal"
                 content="Upload media"
                 labelPosition="right"

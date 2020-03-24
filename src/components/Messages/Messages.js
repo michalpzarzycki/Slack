@@ -37,9 +37,12 @@ const displayMessages = (messages) => (
   ))
   
 )
+
+const displayChannelName = channel => channel ? `#${channel.name}` : ''
+
     return(
         <>
-        <MessageHeader />
+        <MessageHeader channelName={displayChannelName(channel)}/>
         <Segment>
             <Comment.Group className="messages">
                 {displayMessages(messages)}

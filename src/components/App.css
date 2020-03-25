@@ -11,7 +11,8 @@ body,
 /*Messages.js*/
 .messages {
     height: 440px;
-    overflow-y: scroll;
+    overflow-y: auto;
+
 }
 
 /*MessageForm.ks*/

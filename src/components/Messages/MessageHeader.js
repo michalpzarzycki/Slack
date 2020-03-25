@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Segment, Input, Icon } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
-function MessageHeader({ channelName, numUniqueUsers }) {
+function MessageHeader({ channelName, numUniqueUsers, handleSearchChange, loading }) {
 
     return(
         <Segment clearing>
@@ -15,8 +15,10 @@ function MessageHeader({ channelName, numUniqueUsers }) {
             </Header>
             <Header floated="right">
                 <Input 
+                loading={loading}
+                 onChange={handleSearchChange}
                  size="mini"
-                 icon="search"
+                 icon='search'
                  name="searchTerm"
                  placeholder="Search Messages"
                 />

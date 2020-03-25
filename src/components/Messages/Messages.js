@@ -12,12 +12,19 @@ const [user, serUser] = useState(currentUser)
 const [messages, setMessages] = useState([])
 const [messagesLoading, setMessagesLoading] = useState(false)
 const [numUniqueUsers, setNumUniqueUsers] = useState('')
+const [searchTerm, setSearchTerm] = useState('')
+const [loading, setLoading] = useState(false)
+const [searchResults, setSearchResult] = useState([])
 
 useEffect(() => {
     if(channel && user) {
         addListener(channel.id)
     }
 }, [])
+
+useEffect(() => {
+    handleSearchMessages()
+}, [searchTerm])
 
 const addListener = (channelId) => {
     let loadedMessages = [];
@@ -32,7 +39,6 @@ const addListener = (channelId) => {
 
 const countUniqueUsers = loadedMessages => {
     const uniqueUsers = loadedMessages.reduce((acc, message) => {
-        console.log("acc", acc)
         if(!acc.includes(message.user.name)) {
             acc.push(message.user.name)
         }
@@ -57,12 +63,32 @@ const displayMessages = (messages) => (
 
 const displayChannelName = channel => channel ? `#${channel.name}` : '';
 
+
+const handleSearchChange = event => {
+    setSearchTerm(event.target.value)
+    setLoading(true)
+}
+
+const handleSearchMessages = () => {
+    const channelMessages = [...messages];
+    const regex = new RegExp(searchTerm, 'gi')
+    const searchResults = channelMessages.reduce((acc, message) => {
+        if(message.message && message.message.match(regex) || message.user.name.match(regex)) {
+            acc.push(message)
+        }
+        return acc
+    }, [])
+    setTimeout(()=>{
+        setLoading(false)
+    }, 1000)
+setSearchResult(searchResults)
+}
     return(
         <>
-        <MessageHeader channelName={displayChannelName(channel)} numUniqueUsers={numUniqueUsers} />
+        <MessageHeader channelName={displayChannelName(channel)} numUniqueUsers={numUniqueUsers} loading={loading} handleSearchChange={handleSearchChange} />
         <Segment>
             <Comment.Group className="messages">
-                {displayMessages(messages)}
+                {searchTerm ? displayMessages(searchResults) : displayMessages(messages)}
             </Comment.Group>
         </Segment>
         <MessageForm messageRef={messageRef} currentChannel={channel} currentUser={currentUser}/>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Segment, Input, Icon } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
-function MessageHeader({ channelName }) {
+function MessageHeader({ channelName, numUniqueUsers }) {
 
     return(
         <Segment clearing>
@@ -11,7 +11,7 @@ function MessageHeader({ channelName }) {
                     {channelName}
                     <Icon name="star outline" color="black"/>
                 </span>
-                <Header.Subheader>2 users</Header.Subheader>
+                <Header.Subheader>{numUniqueUsers}</Header.Subheader>
             </Header>
             <Header floated="right">
                 <Input 

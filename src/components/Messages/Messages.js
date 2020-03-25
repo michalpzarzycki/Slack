@@ -11,6 +11,7 @@ const [channel, setChannel] = useState(currentChannel)
 const [user, serUser] = useState(currentUser)
 const [messages, setMessages] = useState([])
 const [messagesLoading, setMessagesLoading] = useState(false)
+const [numUniqueUsers, setNumUniqueUsers] = useState('')
 
 useEffect(() => {
     if(channel && user) {
@@ -24,7 +25,23 @@ const addListener = (channelId) => {
         loadedMessages.push(snap.val())
         setMessages([...loadedMessages])
         setMessagesLoading(false)
+        countUniqueUsers(loadedMessages)
+
     })
+}
+
+const countUniqueUsers = loadedMessages => {
+    const uniqueUsers = loadedMessages.reduce((acc, message) => {
+        console.log("acc", acc)
+        if(!acc.includes(message.user.name)) {
+            acc.push(message.user.name)
+        }
+        return acc;
+
+    }, [])
+      const isPlural = uniqueUsers.length > 1 || uniqueUsers.length ===0
+      const numUniqueUsers = `${uniqueUsers.length} user${isPlural ? 's' : ''}`
+      setNumUniqueUsers(numUniqueUsers)
 }
 
 const displayMessages = (messages) => (
@@ -38,11 +55,11 @@ const displayMessages = (messages) => (
   
 )
 
-const displayChannelName = channel => channel ? `#${channel.name}` : ''
+const displayChannelName = channel => channel ? `#${channel.name}` : '';
 
     return(
         <>
-        <MessageHeader channelName={displayChannelName(channel)}/>
+        <MessageHeader channelName={displayChannelName(channel)} numUniqueUsers={numUniqueUsers} />
         <Segment>
             <Comment.Group className="messages">
                 {displayMessages(messages)}

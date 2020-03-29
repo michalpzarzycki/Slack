@@ -6,30 +6,34 @@ function DirectMessages({ currentUser }) {
 const [users, setUsers] = useState([])
 const [user, setUser] = useState(currentUser)
 const [usersRef, setUsersRef] = useState(firebase.database().ref('users'))
-const [connectedRef, setConnectedRef] = useState(firebase.database().ref('info/connected'))
+const [connectedRef, setConnectedRef] = useState(firebase.database().ref('.info/connected'))
 const [presenceRef, setPresenceRef] = useState(firebase.database().ref('presence'))
 
 useEffect(() => {
     if(user) {
         addListeners(user.uid)
-    }
 
+    }
 }, [])
 
 const addListeners = currentUserUid => {
     let loadedUsers = [];
     usersRef.on('child_added', snap => {
+
         if(currentUserUid !== snap.key) {
+
             let user = snap.val()
             user['id'] = snap.key;
             user["status"] = 'offline'
             loadedUsers.push(user);
-            setUser(loadedUsers)
+            setUsers([...loadedUsers])
         }
     })
     connectedRef.on('value', snap => {
+
         if(snap.val() === true) {
-            let ref  = presenceRef.child(currentUser);
+
+            let ref  = presenceRef.child(currentUserUid);
             ref.set(true)
             ref.onDisconnect(err => {
                 if(err !== null) {
@@ -40,12 +44,17 @@ const addListeners = currentUserUid => {
     })
 
     presenceRef.on('child_added', snap => {
+        
+
+
         if(currentUserUid !== snap.key) {
+
             addStatusToUser(snap.key)
 
         }
     })
     presenceRef.on('child_removed', snap => {
+
         if(currentUserUid !== snap.key) {
             addStatusToUser(snap.key, false)
         }
@@ -59,8 +68,10 @@ const addStatusToUser = (userId, connected=true) => {
             }
             return acc.concat(user)
         }, [])
-        setUsers(updatedUsers)
+        setUsers([...updatedUsers])
 }
+
+const isUserOnline = user => user.status === 'online'
      return(
         <Menu.Menu className="menu">
             <Menu.Item>
@@ -69,15 +80,19 @@ const addStatusToUser = (userId, connected=true) => {
                 </span> {" "}
                 {users.length}
             </Menu.Item>
-            {users.map( user => (
+            { users.map( user => {
+                return(
                 <Menu.Item
                 key={user.uid}
                 onClick={() => console.log(user)}
 
                 >
-                    <Icon name="circle" />@ {user.name}
-                </Menu.Item>
-            ))}
+                    <Icon 
+                    name="circle"
+                    color={isUserOnline(user) ? 'green' : 'red'}
+                    />@ {user.name} 
+                </Menu.Item>)
+})}
         </Menu.Menu>
     )
 }

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import MessageHeader from './MessageHeader';
 import MessageForm from './MessageForm';
 import { Segment, Comment } from 'semantic-ui-react';

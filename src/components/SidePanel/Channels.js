@@ -103,7 +103,7 @@ const isFormValid = ({ channelName, channelDetails }) => channelName && channelD
 const closeModal = () => setModal(false)
 const openModal = () => setModal(true)
     return(<>
-        <Menu.Menu style={{paddingBottom: "2em"}}>
+        <Menu.Menu className="menu">
             <Menu.Item>
                 <span>
                     <Icon name="exchange"/> Channels {" "}
